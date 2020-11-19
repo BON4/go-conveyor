@@ -28,6 +28,7 @@ func (l *Loader) SetLoad(loadfunc LoadFunc) {
 
 func (l *Loader) StartLoading(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
+	defer close(l.Out)
 	if l.Out != nil {
 		for {
 			select {

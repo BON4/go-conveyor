@@ -1,7 +1,6 @@
 package items
 
 import (
-	"context"
 	"sync"
 )
 
@@ -26,16 +25,17 @@ func (r *Reciver) SetRecive(reciveFunc ReciveFunc) {
 	r.Recive = reciveFunc
 }
 
-func (r *Reciver) StartReciving(ctx context.Context, wg *sync.WaitGroup) {
+func (r *Reciver) StartReciving(wg *sync.WaitGroup) {
 	defer wg.Done()
 	if r.In != nil {
 		for {
 			select {
-			case <-ctx.Done():
-				//close(r.In)
-				return
-			case x := <-r.In:
-				r.Recive(x)
+			case x, ok := <-r.In:
+				if ok {
+					r.Recive(x)
+				} else {
+					return
+				}
 			}
 		}
 	}

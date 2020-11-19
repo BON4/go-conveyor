@@ -6,8 +6,20 @@ import (
 	"conveyor/line"
 	"log"
 	"math/rand"
-	"time"
+	"os"
+	"os/signal"
+	"syscall"
 )
+
+type closeHandler func()
+
+func SetupCloseHandler(closeFun closeHandler) {
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	<-c
+	closeFun()
+	os.Exit(0)
+}
 
 func modify1(x int) int {
 	return x + 1
@@ -31,9 +43,6 @@ func main() {
 	myLine.AppendItem(items.NewAdder(modify1))
 	myLine.AppendItem(items.NewAdder(modify2))
 
-	log.Println(*myLine.Front())
-	log.Println(*myLine.Back())
-
 	loader := items.NewLoader(load)
 	reciver := items.NewReciver(recive)
 
@@ -45,7 +54,5 @@ func main() {
 
 	myconv.Strat()
 
-	time.Sleep(time.Second * 10)
-
-	myconv.Stop()
+	SetupCloseHandler(myconv.Stop)
 }

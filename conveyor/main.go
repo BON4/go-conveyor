@@ -21,7 +21,7 @@ func (c *Conveyor) Strat() {
 	//TODO maybe move this to constructor
 	ctx, cancel := context.WithCancel(context.Background())
 
-	c.wg = &sync.WaitGroup{}
+	c.wg = new(sync.WaitGroup)
 	c.cancel = cancel
 
 	c.wg.Add(1)
@@ -30,17 +30,17 @@ func (c *Conveyor) Strat() {
 	for e := c.conveyorLine.Front(); e != nil; e = (*e).Next() {
 		item := *e
 		c.wg.Add(1)
-		go item.GetItem().StartModifying(ctx, c.wg)
+		go item.GetItem().StartModifying(c.wg)
 	}
 
 	c.wg.Add(1)
-	go c.reciver.StartReciving(ctx, c.wg)
+	go c.reciver.StartReciving(c.wg)
 }
 
 func (c *Conveyor) Stop() {
 	c.cancel()
 	c.wg.Wait()
-	log.Panicln("Conveyor stoped !")
+	log.Println("Conveyor stoped !")
 }
 
 func NewConveyor(loader items.Head, reciver items.Tail, line line.Line) (*Conveyor, error) {

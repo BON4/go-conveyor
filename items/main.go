@@ -26,7 +26,7 @@ type Tail interface {
 
 	SetRecive(ReciveFunc)
 
-	StartReciving(context.Context, *sync.WaitGroup)
+	StartReciving(*sync.WaitGroup)
 }
 
 type Item interface {
@@ -38,5 +38,5 @@ type Item interface {
 
 	SetModifier(ModifiyFunc)
 
-	StartModifying(context.Context, *sync.WaitGroup)
+	StartModifying(*sync.WaitGroup)
 }
