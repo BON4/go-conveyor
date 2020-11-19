@@ -45,11 +45,11 @@ func (cl *ConveyorLine) Front() *Node {
 	return cl.First
 }
 
-func (cl ConveyorLine) Back() *Node {
+func (cl *ConveyorLine) Back() *Node {
 	return cl.Last
 }
 
-func (cl ConveyorLine) append(n Node) {
+func (cl *ConveyorLine) append(n Node) {
 	if cl.First == nil && cl.Last == nil {
 		cl.First = &n
 		cl.Last = &n
@@ -62,7 +62,7 @@ func (cl ConveyorLine) append(n Node) {
 	}
 }
 
-func (cl ConveyorLine) AppendItem(item items.Item) {
+func (cl *ConveyorLine) AppendItem(item items.Item) {
 	n := newLineNode(item)
 	cl.append(n)
 }

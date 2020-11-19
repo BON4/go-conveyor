@@ -13,14 +13,28 @@ type Conveyor struct {
 	conveyorLine line.Line
 	loader       items.Head
 	reciver      items.Tail
-	wg           sync.WaitGroup
+	wg           *sync.WaitGroup
 	cancel       context.CancelFunc
 }
 
 func (c *Conveyor) Strat() {
-	//Set the waitGroup and pass it to the loader, reciver and to all Items in conveyorLine
-	//Same with context
-	_, c.cancel = context.WithCancel(context.Background())
+	//TODO maybe move this to constructor
+	ctx, cancel := context.WithCancel(context.Background())
+
+	c.wg = &sync.WaitGroup{}
+	c.cancel = cancel
+
+	c.wg.Add(1)
+	go c.loader.StartLoading(ctx, c.wg)
+
+	for e := c.conveyorLine.Front(); e != nil; e = (*e).Next() {
+		item := *e
+		c.wg.Add(1)
+		go item.GetItem().StartModifying(ctx, c.wg)
+	}
+
+	c.wg.Add(1)
+	go c.reciver.StartReciving(ctx, c.wg)
 }
 
 func (c *Conveyor) Stop() {
@@ -31,7 +45,8 @@ func (c *Conveyor) Stop() {
 
 func NewConveyor(loader items.Head, reciver items.Tail, line line.Line) (*Conveyor, error) {
 	//SetUp the line
-	for e := *line.Front(); e != nil; e = *e.Next() {
+	for item := line.Front(); item != nil; item = (*item).Next() {
+		e := *item
 		if e.GetItem() == nil {
 			return nil, errors.New("Some of the node dont have corresponded items.Item")
 		}

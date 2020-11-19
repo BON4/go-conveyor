@@ -2,6 +2,7 @@ package items
 
 import (
 	"context"
+	"sync"
 )
 
 type Reciver struct {
@@ -25,7 +26,8 @@ func (r *Reciver) SetRecive(reciveFunc ReciveFunc) {
 	r.Recive = reciveFunc
 }
 
-func (r *Reciver) StartReciving(ctx context.Context) {
+func (r *Reciver) StartReciving(ctx context.Context, wg *sync.WaitGroup) {
+	defer wg.Done()
 	if r.In != nil {
 		for {
 			select {

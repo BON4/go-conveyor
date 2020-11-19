@@ -2,6 +2,7 @@ package items
 
 import (
 	"context"
+	"sync"
 )
 
 type Loader struct {
@@ -25,7 +26,8 @@ func (l *Loader) SetLoad(loadfunc LoadFunc) {
 	l.Load = loadfunc
 }
 
-func (l *Loader) StartLoading(ctx context.Context) {
+func (l *Loader) StartLoading(ctx context.Context, wg *sync.WaitGroup) {
+	defer wg.Done()
 	if l.Out != nil {
 		for {
 			select {

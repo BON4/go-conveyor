@@ -1,6 +1,9 @@
 package items
 
-import "context"
+import (
+	"context"
+	"sync"
+)
 
 type Adder struct {
 	In  chan int
@@ -33,7 +36,8 @@ func (a *Adder) SetModifier(modifiyFunc ModifiyFunc) {
 	a.Modifyer = modifiyFunc
 }
 
-func (a *Adder) StartModifying(ctx context.Context) {
+func (a *Adder) StartModifying(ctx context.Context, wg *sync.WaitGroup) {
+	defer wg.Done()
 	if a.In != nil && a.Out != nil {
 		for {
 			select {

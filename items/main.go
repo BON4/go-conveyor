@@ -1,6 +1,9 @@
 package items
 
-import "context"
+import (
+	"context"
+	"sync"
+)
 
 type LoadFunc func() int
 
@@ -14,7 +17,7 @@ type Head interface {
 
 	SetLoad(LoadFunc)
 
-	StartLoading(context.Context)
+	StartLoading(context.Context, *sync.WaitGroup)
 }
 
 type Tail interface {
@@ -23,7 +26,7 @@ type Tail interface {
 
 	SetRecive(ReciveFunc)
 
-	StartReciving(context.Context)
+	StartReciving(context.Context, *sync.WaitGroup)
 }
 
 type Item interface {
@@ -35,16 +38,5 @@ type Item interface {
 
 	SetModifier(ModifiyFunc)
 
-	StartModifying(context.Context)
-}
-type Node interface {
-	GetItem() Item
-
-	Next() *Node
-	Prev() *Node
-}
-
-type Line interface {
-	Front() *Node
-	Back() *Node
+	StartModifying(context.Context, *sync.WaitGroup)
 }

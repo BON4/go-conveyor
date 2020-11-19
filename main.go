@@ -6,6 +6,7 @@ import (
 	"conveyor/line"
 	"log"
 	"math/rand"
+	"time"
 )
 
 func modify1(x int) int {
@@ -30,6 +31,9 @@ func main() {
 	myLine.AppendItem(items.NewAdder(modify1))
 	myLine.AppendItem(items.NewAdder(modify2))
 
+	log.Println(*myLine.Front())
+	log.Println(*myLine.Back())
+
 	loader := items.NewLoader(load)
 	reciver := items.NewReciver(recive)
 
@@ -38,4 +42,10 @@ func main() {
 	if err != nil {
 		log.Panicln(err)
 	}
+
+	myconv.Strat()
+
+	time.Sleep(time.Second * 10)
+
+	myconv.Stop()
 }
